@@ -1,10 +1,9 @@
 import React from 'react';
+import RandomTable from './components/RandomTable/RandomTable';
 
 function App() {
   return (
-    <div>
-      hello
-    </div>
+    <RandomTable />
   );
 }
 
