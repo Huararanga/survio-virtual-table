@@ -1,9 +1,9 @@
 import {
   TableData,
   ColumnParams,
-  SortTypeValues,
+  SortType,
   TableRowData,
-  ColumnFormat,
+  TableCellData,
 } from "./types";
 
 export function generateValue() {
@@ -22,6 +22,22 @@ export function generateData(rows: number, columns: number): TableData {
   });
 }
 
+export function updateCell(data: TableData, changeRow: TableRowData, changeCell: TableCellData) {
+  return data.map((row) => {
+    if(row === changeRow) {
+      return row.map((cell) => {
+        if(cell === changeCell) {
+          return createCell(generateValue());
+        } else {
+          return cell;
+        }
+      });
+    } else {
+      return row;
+    }
+  })
+}
+
 export function getColumnParams(columns: number): ColumnParams {
   let index = 0;
   return [
@@ -36,7 +52,7 @@ export function getColumnParams(columns: number): ColumnParams {
       name: `Sum`,
       width: 50,
       format: { evenColor: "#f44336", oddColor: "#3f50b5" },
-    }
+    },
   ];
 }
 
@@ -44,20 +60,14 @@ export function getRowSum(row: TableRowData) {
   return row.reduce((sum, current) => sum + current.value, 0);
 }
 
-export function sortData(
-  tableData: TableData,
-  sort: SortTypeValues
-): TableData {
+export function sortData(tableData: TableData, sort: SortType): TableData {
+  const clone = [...tableData];
   switch (sort) {
     case "asc":
-      return tableData.sort((a, b) => getRowSum(a) - getRowSum(b));
+      return clone.sort((a, b) => getRowSum(b) - getRowSum(a));
     case "desc":
-      return tableData.sort((a, b) => getRowSum(b) - getRowSum(a));
+      return clone.sort((a, b) => getRowSum(a) - getRowSum(b));
     default:
-      return [...tableData];
+      return clone;
   }
-}
-
-export function getCellColor(value: number, format: ColumnFormat) {
-  return (value % 2) ? format.evenColor : format.oddColor
 }

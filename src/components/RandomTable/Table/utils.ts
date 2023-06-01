@@ -1,4 +1,4 @@
-import { ColumnParams } from "../types";
+import { ColumnFormat, ColumnParams } from "../types";
 
 export function getTableHeight(rowHeight: number, rowCount: number) {
   return rowHeight * rowCount;
@@ -15,4 +15,8 @@ export function getVisibleBoundaries(tableHeight: number, lineHeight: number, to
     topIndex >= 0 ? topIndex : 0,
     Math.ceil(bottomPosition/lineHeight) + around,
   ];
+}
+
+export function getCellColor(value: number, format: ColumnFormat) {
+  return value % 2 ? format.evenColor : format.oddColor;
 }

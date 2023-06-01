@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Button, Paper, TextField, Stack } from "@mui/material";
 
-import { SortType, TableParams, SortTypeValues } from "../types";
+import { SortType, TableParams } from "../types";
 import SortButton from "./SortButton";
 
 export type ControlsProps = {
-  sortState: SortTypeValues;
+  sortState: SortType;
   onGenerateClick: (params: TableParams) => void;
   onSortClick: (sort: SortType) => void;
 }
 
 function Controls({ sortState, onGenerateClick, onSortClick }: ControlsProps) {
-  const [rows, setRows] = useState(100);
+  const [rows, setRows] = useState(10);
   const [columns, setColumns] = useState(10);
 
   return (

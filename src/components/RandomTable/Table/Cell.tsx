@@ -1,6 +1,6 @@
 import React from "react";
 import { ColumnParam, TableCellData } from "../types";
-import { getCellColor } from "../utils";
+import { getCellColor } from "./utils";
 
 export type CellProps = {
   cell: TableCellData;

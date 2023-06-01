@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Box, Paper } from "@mui/material";
 import { throttle } from "throttle-debounce";
-import { ColumnParams, TableData } from "../types";
+import { ColumnParams, TableData, TableRowData, TableCellData } from "../types";
 import { getTableHeight, getTableWidth, getVisibleBoundaries } from "./utils";
 import Row from "./Row";
 import Header from "./Header";
@@ -14,11 +14,10 @@ const SCROLL_DELAY = 5;
 export type TableProps = {
   data: TableData;
   columns: ColumnParams;
+  updateCellValue: (row: TableRowData, cell: TableCellData) => void;
 };
 
-function Table({ data, columns }: TableProps) {
-  const rowCount = data.length;
-
+function Table({ data, columns, updateCellValue }: TableProps) {
   const [scrollTop, setScrollTop] = useState(0);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,13 +38,13 @@ function Table({ data, columns }: TableProps) {
   );
 
   return (
-    <Paper sx={{ padding: '1rem', width: 'fit-content' }}>
+    <Paper sx={{ padding: "1rem", width: "fit-content" }}>
       <Header columns={columns} />
       <Box
         sx={{
           overflowY: "auto",
           userSelect: "none",
-          height: TABLE_HEIGHT,
+          maxHeight: TABLE_HEIGHT,
           width: getTableWidth(columns) + SCROLLBAR_WIDTH,
         }}
         onScroll={onScroll}
@@ -53,7 +52,7 @@ function Table({ data, columns }: TableProps) {
         <Box
           sx={{
             position: "relative",
-            height: getTableHeight(ROW_HEIGHT, rowCount),
+            height: getTableHeight(ROW_HEIGHT, data.length),
           }}
         >
           {data
@@ -67,6 +66,7 @@ function Table({ data, columns }: TableProps) {
                   height={ROW_HEIGHT}
                   top={rowIndex * ROW_HEIGHT}
                   columns={columns}
+                  updateCellValue={updateCellValue}
                 />
               );
             })}

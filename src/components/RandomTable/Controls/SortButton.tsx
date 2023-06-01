@@ -1,16 +1,16 @@
 import { ArrowCircleUp, ArrowCircleDown, Adjust } from "@mui/icons-material";
 
-import { SortType, SortTypeValues } from "../types";
+import { SortType } from "../types";
 import { IconButton, IconButtonProps } from "@mui/material";
 
 export type SortButtonProps = {
-  sortState: SortTypeValues;
-  buttonType: SortTypeValues;
+  sortState: SortType;
+  buttonType: SortType;
 } & IconButtonProps;
 
 function getSortButtonColor(
-  sortState: SortTypeValues,
-  buttonType: SortTypeValues
+  sortState: SortType,
+  buttonType: SortType
 ) {
   switch (buttonType) {
     case "asc":
@@ -23,7 +23,7 @@ function getSortButtonColor(
   }
 }
 
-function getSortButtonComponent(buttonType: SortTypeValues) {
+function getSortButtonComponent(buttonType: SortType) {
   switch (buttonType) {
     case "asc":
       return ArrowCircleUp;

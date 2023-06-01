@@ -1,51 +1,42 @@
-import React, { memo, useState, useCallback, useEffect } from "react";
-import { ColumnParams, TableRowData } from "../types";
-import { Box } from "@mui/material";
+import React, { memo } from "react";
+import { ColumnParams, TableCellData, TableRowData } from "../types";
 import Cell from "./Cell";
-import { createCell, generateValue, getRowSum } from "../utils";
+import { createCell, getRowSum } from "../utils";
 
 export type RowProps = {
   row: TableRowData;
   height: number;
   top: number;
   columns: ColumnParams;
+  updateCellValue: (row: TableRowData, cell: TableCellData) => void;
 };
 
-function Row({ row, height, columns, top }: RowProps) {
-  const [currentSumRow, setCurrentSumRow] = useState(getRowSum(row));
-  
-  useEffect(() => {
-    setCurrentSumRow(getRowSum(row));
-  }, [row])
-
-  const updateCellValue = useCallback((columnIndex: number) => {
-    row[columnIndex].value = generateValue();
-    setCurrentSumRow(getRowSum(row));
-  }, [row])
-
-
-  const rowWithSum = [...row, createCell(currentSumRow)];
-
+function Row({
+  row,
+  height,
+  columns,
+  top,
+  updateCellValue,
+}: RowProps) {
+  const rowWithSum = [...row, createCell(getRowSum(row))];
   return (
     <div
       style={{
         position: "absolute",
         width: "100%",
-        borderBottom: '1px solid black',
+        borderBottom: "1px solid black",
         height,
         top,
       }}
     >
-      {rowWithSum.map((cell, columnIndex) => {
-        return (
+      {rowWithSum.map((cell, columnIndex) => (
           <Cell
             key={columnIndex}
             cell={cell}
             columnParams={columns[columnIndex]}
-            onDoubleClick={() => updateCellValue(columnIndex)}
+            onDoubleClick={() => updateCellValue(row, cell)}
           />
-        );
-      })}
+        ))}
     </div>
   );
 }
