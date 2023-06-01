@@ -8,7 +8,10 @@ export type SortButtonProps = {
   buttonType: SortTypeValues;
 } & IconButtonProps;
 
-function getSortButtonColor(sortState: SortTypeValues, buttonType: SortTypeValues) {
+function getSortButtonColor(
+  sortState: SortTypeValues,
+  buttonType: SortTypeValues
+) {
   switch (buttonType) {
     case "asc":
       return sortState === SortType.ASC ? "primary" : "secondary";
@@ -21,28 +24,21 @@ function getSortButtonColor(sortState: SortTypeValues, buttonType: SortTypeValue
 }
 
 function getSortButtonComponent(buttonType: SortTypeValues) {
-    switch (buttonType) {
-      case "asc":
-        return ArrowCircleUp;
-      case "desc":
-        return ArrowCircleDown;
-      case "default":
-      default:
-        return Adjust;
-    }
+  switch (buttonType) {
+    case "asc":
+      return ArrowCircleUp;
+    case "desc":
+      return ArrowCircleDown;
+    case "default":
+    default:
+      return Adjust;
   }
+}
 
-function SortButton({
-  sortState,
-  buttonType,
-  ...rest
-}: SortButtonProps) {
+function SortButton({ sortState, buttonType, ...rest }: SortButtonProps) {
   const Component = getSortButtonComponent(buttonType);
   return (
-    <IconButton
-      color={getSortButtonColor(sortState, buttonType)}
-      {...rest}
-    >
+    <IconButton color={getSortButtonColor(sortState, buttonType)} {...rest}>
       <Component />
     </IconButton>
   );

@@ -1,48 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { Box } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import { Stack } from "@mui/material";
 import Controls from "./Controls/Controls";
 import { generateData, getColumnParams, sortData } from "./utils";
-import {
-  SortType,
-  TableData,
-  TableParams,
-  ColumnParams,
-} from "./types";
+import { SortType, TableData, TableParams, ColumnParams } from "./types";
 import Table from "./Table/Table";
 
 function RandomTable() {
-  const [sortState, setSortState] = useState<SortType>(SortType.DEFAULT);
   const [tableParams, setTableParams] = useState<TableParams>({
     rows: 0,
     columns: 0,
   });
-  const [tableData, setTableData] = useState<TableData>([[]]);
+
+  const [sortState, setSortState] = useState<SortType>(SortType.DEFAULT);
+
+  const [tableData, setTableData] = useState<TableData>([]);
+  
   const [columnParams, setColumnParams] = useState<ColumnParams>([]);
 
-  const [sortedTableData, setSortedTableData] = useState<TableData>([[]]);
+  const [sortedTableData, setSortedTableData] = useState<TableData>([]);
+
+  const generateNewData = useCallback(
+    (rows: number, columns: number, sortState: SortType) => {
+      const data = generateData(rows, columns);
+      setTableData(data);
+      setSortedTableData(sortData(data, sortState));
+      setColumnParams(getColumnParams(columns));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    []
+  );
 
   useEffect(() => {
-    const data = generateData(tableParams.rows, tableParams.columns);
-    setTableData(data)
-    setSortedTableData(sortData(data, sortState))
-    setColumnParams(getColumnParams(tableParams.columns))
-  }, [tableParams.rows, tableParams.columns, sortState])
+    generateNewData(tableParams.rows, tableParams.columns, sortState);
+  }, [tableParams.rows, tableParams.columns, sortState, generateNewData]);
 
   useEffect(() => {
-    setSortedTableData(sortData(tableData, sortState))
-  }, [sortState])
-  
+    setSortedTableData(sortData(tableData, sortState));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortState]);
+
   return (
-    <Box margin="1rem">
+    <Stack direction='column' spacing="1rem" margin="1rem">
       <Controls
         sortState={sortState}
-        onGenerateClick={(params) => setTableParams(params)}
+        onGenerateClick={(params) => {
+          if (
+            params.rows === tableParams.rows &&
+            params.columns === tableParams.columns
+          ) {
+            generateNewData(tableParams.rows, tableParams.columns, sortState);
+          } else {
+            setTableParams(params);
+          }
+        }}
         onSortClick={(sortState) => setSortState(sortState)}
       />
-      {tableData.length
-        ? <Table data={sortedTableData} columns={columnParams}/>
-        : null}
-    </Box>
+      {sortedTableData.length ? (
+        <Table data={sortedTableData} columns={columnParams} />
+      ) : null}
+    </Stack>
   );
 }
 

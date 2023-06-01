@@ -8,11 +8,11 @@ export function getTableWidth(columns: ColumnParams) {
   return columns.reduce((sum, current) => sum + current.width, 0);
 }
 
-export function getCellPositions(columns: ColumnParams) {
-  return columns.reduce<number[]>((acc, current) => {
-    return [
-      ...acc,
-      !acc.length ? 0 : acc[acc.length - 1] + current.width
-    ]
-  }, []);
+export function getVisibleBoundaries(tableHeight: number, lineHeight: number, topPosition: number, around = 5) {
+  const bottomPosition = topPosition + tableHeight;
+  const topIndex = Math.floor(topPosition/lineHeight) - around;
+  return [
+    topIndex >= 0 ? topIndex : 0,
+    Math.ceil(bottomPosition/lineHeight) + around,
+  ];
 }

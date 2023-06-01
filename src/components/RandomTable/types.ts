@@ -10,9 +10,8 @@ export type SortTypeValues = `${SortType}`;
 export type TableParams = { rows: number, columns: number };
 
 // DATA
-export type Digits = number; // 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
-export type TableCellData = { value: Digits };
+export type TableCellData = { value: number };
 
 export type TableRowData = TableCellData[];
 

@@ -11,11 +11,11 @@ export type ControlsProps = {
 }
 
 function Controls({ sortState, onGenerateClick, onSortClick }: ControlsProps) {
-  const [rows, setRows] = useState(10);
+  const [rows, setRows] = useState(100);
   const [columns, setColumns] = useState(10);
 
   return (
-    <Paper sx={{ padding: '1rem' }}>
+    <Paper sx={{ padding: '1rem', width: 'fit-content' }}>
       <Stack direction="row" spacing='1rem'>
         <TextField
           type="number"

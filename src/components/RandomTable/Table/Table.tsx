@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Box } from "@mui/material";
+import React, { useState, useCallback } from "react";
+import { Box, Paper } from "@mui/material";
+import { throttle } from "throttle-debounce";
 import { ColumnParams, TableData } from "../types";
-import { getCellPositions, getTableHeight, getTableWidth } from "./utils";
-import { sumRow } from "../utils";
+import { getTableHeight, getTableWidth, getVisibleBoundaries } from "./utils";
+import Row from "./Row";
+import Header from "./Header";
 
 const ROW_HEIGHT = 24;
-const ROW_HEIGHT_PX = `${ROW_HEIGHT}px`;
 const TABLE_HEIGHT = 500;
-const SCROLLBAR_WIDTH = 20;
+const SCROLLBAR_WIDTH = 18;
+const SCROLL_DELAY = 5;
 
 export type TableProps = {
   data: TableData;
@@ -16,62 +18,61 @@ export type TableProps = {
 
 function Table({ data, columns }: TableProps) {
   const rowCount = data.length;
-  const cellPositions = getCellPositions(columns);
 
   const [scrollTop, setScrollTop] = useState(0);
-  console.log(scrollTop);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onScroll = useCallback(
+    throttle(SCROLL_DELAY, (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+      const scroll = event.currentTarget?.scrollTop;
+      if (scroll !== undefined) {
+        setScrollTop(Math.round(scroll));
+      }
+    }),
+    []
+  );
+
+  const [topVisibleIndex, bottomVisibleIndex] = getVisibleBoundaries(
+    TABLE_HEIGHT,
+    ROW_HEIGHT,
+    scrollTop
+  );
+
   return (
-    <Box
-      sx={{
-        height: TABLE_HEIGHT,
-        width: getTableWidth(columns) + SCROLLBAR_WIDTH,
-        overflowY: "auto",
-        backgroundColor: "blue",
-      }}
-      onScroll={(event) => {
-        setScrollTop(event.currentTarget.scrollTop);
-      }}
-    >
+    <Paper sx={{ padding: '1rem', width: 'fit-content' }}>
+      <Header columns={columns} />
       <Box
         sx={{
-          height: getTableHeight(ROW_HEIGHT, rowCount),
-          backgroundColor: "red",
-          position: "relative",
+          overflowY: "auto",
+          userSelect: "none",
+          height: TABLE_HEIGHT,
+          width: getTableWidth(columns) + SCROLLBAR_WIDTH,
         }}
+        onScroll={onScroll}
       >
-        {data.map((row, rowIndex) => {
-          return (
-            <Box
-              key={rowIndex}
-              sx={{
-                position: "absolute",
-                height: ROW_HEIGHT_PX,
-                width: "100%",
-                top: `${rowIndex * ROW_HEIGHT}px`,
-                backgroundColor: "green",
-              }}
-            >
-              {[...row, { value: sumRow(row) }].map((cell, columnIndex) => {
-                const { value } = cell;
-                return (
-                  <span
-                    key={columnIndex}
-                    style={{
-                      display: "inline-block",
-                      backgroundColor: "yellow",
-                      left: cellPositions[columnIndex],
-                      width: `${columns[columnIndex].width}px`,
-                    }}
-                  >
-                    {value}
-                  </span>
-                );
-              })}
-            </Box>
-          );
-        })}
+        <Box
+          sx={{
+            position: "relative",
+            height: getTableHeight(ROW_HEIGHT, rowCount),
+          }}
+        >
+          {data
+            .slice(topVisibleIndex, bottomVisibleIndex)
+            .map((row, sliceIndex) => {
+              const rowIndex = topVisibleIndex + sliceIndex;
+              return (
+                <Row
+                  key={rowIndex}
+                  row={row}
+                  height={ROW_HEIGHT}
+                  top={rowIndex * ROW_HEIGHT}
+                  columns={columns}
+                />
+              );
+            })}
+        </Box>
       </Box>
-    </Box>
+    </Paper>
   );
 }
 
