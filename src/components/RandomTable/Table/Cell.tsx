@@ -4,13 +4,13 @@ import { getCellColor } from "./utils";
 
 export type CellProps = {
   cell: TableCellData;
-  columnParams: ColumnParam;
+  columns: ColumnParam;
   onDoubleClick: () => void;
 };
 
 function Cell({
   cell,
-  columnParams,
+  columns,
   onDoubleClick
 }: CellProps) {
   const { value } = cell;
@@ -20,8 +20,8 @@ function Cell({
       style={{
         display: "inline-block",
         textAlign: 'center',
-        color: getCellColor(value, columnParams.format),
-        width: columnParams.width,
+        color: getCellColor(value, columns.format),
+        width: columns.width,
       }}
       onClick={(e) => {
         if (e.detail > 1) {

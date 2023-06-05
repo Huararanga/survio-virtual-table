@@ -19,6 +19,7 @@ function Row({
   updateCellValue,
 }: RowProps) {
   const rowWithSum = [...row, createCell(getRowSum(row))];
+
   return (
     <div
       style={{
@@ -33,7 +34,7 @@ function Row({
           <Cell
             key={columnIndex}
             cell={cell}
-            columnParams={columns[columnIndex]}
+            columns={columns[columnIndex]}
             onDoubleClick={() => updateCellValue(row, cell)}
           />
         ))}
@@ -41,4 +42,11 @@ function Row({
   );
 }
 
-export default memo(Row);
+export default memo(
+  Row,
+  (props, newProps) => (
+    (props.row.find((cell, index) => cell !== newProps.row[index]) === undefined)
+    && props.height === newProps.height
+    && props.top === newProps.top
+  )
+);
